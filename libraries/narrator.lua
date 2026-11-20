@@ -173,11 +173,13 @@ function narrator:_pump(state)
         -- Mark the speaker free again once the dialog box closes.
         config.oncomplete = function()
             if state.npc then state.npc.isTalking = false end
+            if state.onComplete then state.onComplete(state.npc) end
         end
 
         if #lines == 0 then
             -- Nothing left at all (e.g. story:choose led straight to END).
             if state.npc then state.npc.isTalking = false end
+            if state.onComplete then state.onComplete(state.npc) end
             return
         end
     end
@@ -188,8 +190,12 @@ end
 
 --- Start a script. Accepts either a bound NPC (uses its character + script)
 --- or a raw script name string.
-function narrator:startScript(npcOrScriptName)
+-- @param onComplete Optional callback invoked after the conversation ends.
+function narrator:startScript(npcOrScriptName, onComplete)
     local npc, scriptName, character
+
+    assert(onComplete == nil or type(onComplete) == "function",
+        "narrator:startScript - onComplete must be a function")
 
     if type(npcOrScriptName) == "string" then
         scriptName = npcOrScriptName
@@ -213,7 +219,12 @@ function narrator:startScript(npcOrScriptName)
 
     if npc then npc.isTalking = true end
 
-    local state = { story = story, npc = npc, character = character }
+    local state = {
+        story = story,
+        npc = npc,
+        character = character,
+        onComplete = onComplete,
+    }
     self:_pump(state)
 end
 
