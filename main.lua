@@ -190,7 +190,40 @@ states.game = {
 
 }
 
+local function resetGame()
+    completedInterviews = {}
+    menuPulseTime = 0
+
+    player.x = 60
+    player.y = 320
+    player.anim = player.animations.left
+    player.anim:gotoFrame(2)
+
+    for _, npc in ipairs({ scoutNPC, coachNPC }) do
+        npc.x = npc.originX
+        npc.y = npc.originY
+        npc.targetX = npc.originX
+        npc.targetY = npc.originY
+        npc.state = "paused"
+        npc.pauseTimer = 0
+        npc.pauseDuration = 1
+        npc.anim = npc.animations.down
+        npc.anim:gotoFrame(2)
+        npc.isTalking = false
+    end
+
+    nearbyNPC = nil
+    cam:lookAt(player.x, player.y)
+end
+
 states.gameover = {
+    keypressed = function(self, key)
+        if key == "space" then
+            resetGame()
+            changeState("menu")
+        end
+    end,
+
     draw = function(self)
         local width, height = drawStadiumBackground()
         local panelWidth = math.min(width * 0.8, 760)
@@ -222,9 +255,9 @@ states.gameover = {
         )
         love.graphics.setFont(gameOverPromptFont)
         love.graphics.printf(
-            "Press Escape to leave the game",
+            "Press Escape to leave the game\nPress Space to restart",
             panelX,
-            panelY + panelHeight * 0.86,
+            panelY + panelHeight * 0.8,
             panelWidth,
             "center"
         )
