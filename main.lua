@@ -83,25 +83,25 @@ states.game = {
             local isMoving = false
 
             if love.keyboard.isDown("right") then
-                player.x = player.x + player.speed
+                player.x = player.x + player.speed * dt
                 player.anim = player.animations.right
                 isMoving = true
             end
 
             if love.keyboard.isDown("left") then
-                player.x = player.x - player.speed
+                player.x = player.x - player.speed * dt
                 player.anim = player.animations.left
                 isMoving = true
             end
 
             if love.keyboard.isDown("down") then
-                player.y = player.y + player.speed
+                player.y = player.y + player.speed * dt
                 player.anim = player.animations.down
                 isMoving = true
             end
 
             if love.keyboard.isDown("up") then
-                player.y = player.y - player.speed
+                player.y = player.y - player.speed * dt
                 player.anim = player.animations.up
                 isMoving = true
             end
@@ -293,7 +293,7 @@ function love.load()
     player = {}
     player.x = 60
     player.y = 320
-    player.speed = 5
+    player.speed = 200
     player.spriteSheet = love.graphics.newImage('sprites/qb-sheet.png')
     player.grid = anim8.newGrid( 12, 18, player.spriteSheet:getWidth(), player.spriteSheet:getHeight() )
 
